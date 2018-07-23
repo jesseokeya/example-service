@@ -7,8 +7,6 @@ clean:
 	@rm -f $(NAME)
 
 lint:
-	@go get -u github.com/alecthomas/gometalinter
-	@gometalinter --install
 	@gometalinter --enable-all ./cmd/... ./internal/... ./pkg/...
 
 test-unit:
