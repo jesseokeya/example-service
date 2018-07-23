@@ -1,7 +1,5 @@
 # palindrome-service
 
-[![Build Status](https://travis-ci.com/nicholaslam/palindrome-service.svg?branch=master)](https://travis-ci.com/nicholaslam/palindrome-service)
-
 Palindrome service allows create, read, read all, and delete operations on messages. Messages are evaluated to determine if they are palindromes. Only English is supported.
 
 ## Required Software
