@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/gorilla/mux"
 	"github.com/nicholaslam/palindrome-service/internal/endpoint"
@@ -16,6 +19,8 @@ func main() {
 	httpAddr := flag.String("http-addr", ":8080", "HTTP listen address")
 	strictPalindrome := flag.Bool("strict-palindrome", true, "Use strict definition of a palindrome")
 	flag.Parse()
+	log.Printf("http-addr %s", *httpAddr)
+	log.Printf("strict-palindrome %t", *strictPalindrome)
 
 	store := store.NewTempStore()
 	service := service.NewService(store, *strictPalindrome)
@@ -45,9 +50,26 @@ func main() {
 
 	r.NotFoundHandler = http.HandlerFunc(notFound)
 
-	log.Printf("http-addr %s", *httpAddr)
-	log.Printf("strict-palindrome %t", *strictPalindrome)
-	http.ListenAndServe(*httpAddr, r)
+	srv := http.Server{
+		Addr:    *httpAddr,
+		Handler: r,
+	}
+
+	done := make(chan struct{})
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+		if err := srv.Shutdown(context.Background()); err != nil {
+			log.Printf("server shutdown: %v", err)
+		}
+		close(done)
+	}()
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Printf("server listen and serve: %v", err)
+	}
+	<-done
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
