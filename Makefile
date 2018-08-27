@@ -1,10 +1,11 @@
 NAME := palindrome
+VERSION ?= latest
 
 build:
 	@go build -o $(NAME) ./cmd/server/main.go
 
-clean:
-	@rm -f $(NAME)
+build-docker:
+	@docker build --build-arg name=$(NAME) --tag $(NAME):$(VERSION) .
 
 lint:
 	@gometalinter --enable-all ./cmd/... ./internal/... ./pkg/...
@@ -12,4 +13,4 @@ lint:
 test-unit:
 	@go test -count=1 -race -cover ./...
 
-.PHONY: build clean lint test-unit
+.PHONY: build build-docker lint test-unit

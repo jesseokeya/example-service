@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/nicholaslam/palindrome-service/internal/endpoint"
@@ -16,9 +17,24 @@ import (
 )
 
 func main() {
-	httpAddr := flag.String("http-addr", ":8080", "HTTP listen address")
-	strictPalindrome := flag.Bool("strict-palindrome", true, "Use strict definition of a palindrome")
+	defaultHTTPAddr := ":8080"
+	defaultStrictPalindrome := true
+
+	httpAddr := flag.String("http-addr", defaultHTTPAddr, "HTTP listen address")
+	strictPalindrome := flag.Bool("strict-palindrome", defaultStrictPalindrome, "Use strict definition of a palindrome")
+
+	envHTTPAddr := os.Getenv("HTTP_ADDR")
+	if *httpAddr == defaultHTTPAddr && envHTTPAddr != "" {
+		httpAddr = &envHTTPAddr
+	}
+
+	envStrictPalindrome := os.Getenv("STRICT_PALINDROME")
+	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
+		strictPalindrome = toBool(envStrictPalindrome)
+	}
+
 	flag.Parse()
+
 	log.Printf("http-addr %s", *httpAddr)
 	log.Printf("strict-palindrome %t", *strictPalindrome)
 
@@ -74,4 +90,9 @@ func main() {
 
 func notFound(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
+}
+
+func toBool(s string) *bool {
+	b := strings.ToLower(s) == "true"
+	return &b
 }
