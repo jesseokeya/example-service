@@ -1,7 +1,10 @@
-[prune]
-  non-go = true
-  go-tests = true
-  unused-packages = true
+[[constraint]]
+  name = "github.com/go-kit/kit"
+  version = "0.7.0"
+
+[[constraint]]
+  name = "github.com/gorilla/mux"
+  version = "1.6.2"
 
 [[constraint]]
   name = "github.com/satori/go.uuid"
@@ -9,8 +12,9 @@
 
 [[constraint]]
   name = "github.com/stretchr/testify"
-  version = "1.2.1"
+  version = "1.2.2"
 
-[[constraint]]
-  name = "github.com/go-kit/kit"
-  version = "0.7.0"
+[prune]
+  non-go = true
+  go-tests = true
+  unused-packages = true
