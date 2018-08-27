@@ -65,7 +65,10 @@ func main() {
 	r.Methods("GET").Path("/messages/").Handler(listHandler)
 	r.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
 	r.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
-	r.NotFoundHandler = http.HandlerFunc(notFound)
+
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	})
 
 	srv := http.Server{
 		Addr:    *httpAddr,
@@ -73,6 +76,7 @@ func main() {
 	}
 
 	done := make(chan struct{})
+
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
@@ -82,13 +86,11 @@ func main() {
 		}
 		close(done)
 	}()
+
 	log.Println("server started", "http-addr", *httpAddr, "strict-palindrome", *strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
 	}
-	<-done
-}
 
-func notFound(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
+	<-done
 }
