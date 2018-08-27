@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -34,13 +35,10 @@ func main() {
 	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
 		*strictPalindrome, err = strconv.ParseBool(envStrictPalindrome)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
 			return
 		}
 	}
-
-	log.Printf("http-addr %s", *httpAddr)
-	log.Printf("strict-palindrome %t", *strictPalindrome)
 
 	store := store.NewTempStore()
 	service := service.NewService(store, *strictPalindrome)
@@ -58,7 +56,7 @@ func main() {
 	r := mux.NewRouter()
 	r = r.PathPrefix("/api/v1/").Subrouter()
 
-	// Duplicate routes to match trailing slash without redirecting.
+	// Duplicate route definitions to match trailing slash without redirecting.
 	r.Methods("POST").Path("/messages").Handler(createHandler)
 	r.Methods("POST").Path("/messages/").Handler(createHandler)
 	r.Methods("GET").Path("/messages/{id}").Handler(readHandler)
@@ -67,7 +65,6 @@ func main() {
 	r.Methods("GET").Path("/messages/").Handler(listHandler)
 	r.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
 	r.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
-
 	r.NotFoundHandler = http.HandlerFunc(notFound)
 
 	srv := http.Server{
@@ -81,13 +78,13 @@ func main() {
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 		if err := srv.Shutdown(context.Background()); err != nil {
-			log.Printf("server shutdown: %v", err)
+			log.Println(err)
 		}
 		close(done)
 	}()
-
+	log.Println("server started", "http-addr", *httpAddr, "strict-palindrome", *strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
-		log.Printf("server listen and serve: %v", err)
+		log.Println(err)
 	}
 	<-done
 }
