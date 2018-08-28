@@ -5,7 +5,7 @@ build:
 	@go build -o $(NAME) ./cmd/server/main.go
 
 build-docker:
-	@docker build --build-arg name=$(NAME) --tag $(NAME):$(VERSION) .
+	@docker build --tag $(NAME):$(VERSION) .
 
 lint:
 	@gometalinter --enable-all ./cmd/... ./internal/... ./pkg/...
