@@ -15,8 +15,7 @@ Use `make build` to build the service. Execute the `palindrome` binary to start 
 ./palindrome -http-addr=:8080 -strict-palindrome=true
 ```
 
-Use `make build-docker` to build the docker image. Use `docker run` to start the service in a container. The supported environment variables are `HTTP_ADDR` and `STRICT_PALINDROME`.
-
+Use `make build-docker` to build the docker image. Use `docker run` to run the service in a container. The supported environment variables are `HTTP_ADDR` and `STRICT_PALINDROME`.
 
 ```
 docker run -e HTTP_ADDR=:8080 -e STRICT_PALINDROME=true -p 8080:8080 palindrome:latest
