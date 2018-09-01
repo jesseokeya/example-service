@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -35,7 +34,7 @@ func main() {
 	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
 		*strictPalindrome, err = strconv.ParseBool(envStrictPalindrome)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("invalid boolean value %s for STRICT_PALINDROME: %s\n", envStrictPalindrome, err.Error())
 			return
 		}
 	}
@@ -87,9 +86,12 @@ func main() {
 		close(done)
 	}()
 
-	log.Println("server started", "http-addr", *httpAddr, "strict-palindrome", *strictPalindrome)
+	log.Println("http-addr", *httpAddr, "strict-palindrome", *strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
+		if err != http.ErrServerClosed {
+			close(done)
+		}
 	}
 
 	<-done
