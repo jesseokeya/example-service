@@ -11,13 +11,13 @@ Palindrome service allows create, read, read all, and delete operations on messa
 
 Use `make build` to build the service. Execute the `palindrome` binary to start the service. The supported command-line flags are `http-addr` and `strict-palindrome`.
 
-```
+```sh
 ./palindrome -http-addr=:8080 -strict-palindrome=true
 ```
 
 Use `make build-docker` to build the docker image. Use `docker run` to run the service in a container. The supported environment variables are `HTTP_ADDR` and `STRICT_PALINDROME`.
 
-```
+```sh
 docker run -e HTTP_ADDR=:8080 -e STRICT_PALINDROME=true -p 8080:8080 palindrome:latest
 ```
 
