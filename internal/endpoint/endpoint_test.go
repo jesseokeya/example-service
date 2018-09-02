@@ -24,7 +24,7 @@ func (ms *mockService) Read(ctx context.Context, id string) (service.Message, er
 	return ms.msg, ms.err
 }
 
-func (ms *mockService) List(ctx context.Context) ([]service.Message, error) {
+func (ms *mockService) List(ctx context.Context, p service.ListPayload) ([]service.Message, error) {
 	return ms.msgs, ms.err
 }
 
@@ -34,6 +34,10 @@ func (ms *mockService) Delete(ctx context.Context, id string) error {
 
 func toStringPointer(s string) *string {
 	return &s
+}
+
+func toBoolPointer(b bool) *bool {
+	return &b
 }
 
 func TestMakeCreateEndpoint(t *testing.T) {
@@ -192,13 +196,15 @@ func TestMakeListEndpoint(t *testing.T) {
 	now := time.Now().UTC().Format(time.RFC3339)
 
 	testCases := []struct {
-		name   string
-		svc    service.Servicer
-		want   []MessageResponse
-		errMsg string
+		name        string
+		listRequest ListRequest
+		svc         service.Servicer
+		want        []MessageResponse
+		errMsg      string
 	}{
 		{
-			"success",
+			"no palindrome query",
+			ListRequest{Palindrome: nil},
 			&mockService{
 				service.Message{},
 				[]service.Message{
@@ -210,6 +216,12 @@ func TestMakeListEndpoint(t *testing.T) {
 					},
 					{
 						ID:         "456",
+						Text:       "a toyota",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+					{
+						ID:         "789",
 						Text:       "abc",
 						Palindrome: false,
 						CreatedAt:  now,
@@ -226,6 +238,74 @@ func TestMakeListEndpoint(t *testing.T) {
 				},
 				{
 					ID:         "456",
+					Text:       "a toyota",
+					Palindrome: false,
+					CreatedAt:  now,
+				},
+				{
+					ID:         "789",
+					Text:       "abc",
+					Palindrome: false,
+					CreatedAt:  now,
+				},
+			},
+			"",
+		},
+		{
+			"palindrome=true",
+			ListRequest{Palindrome: toBoolPointer(true)},
+			&mockService{
+				service.Message{},
+				[]service.Message{
+					{
+						ID:         "123",
+						Text:       "racecar",
+						Palindrome: true,
+						CreatedAt:  now,
+					},
+				},
+				nil,
+			},
+			[]MessageResponse{
+				{
+					ID:         "123",
+					Text:       "racecar",
+					Palindrome: true,
+					CreatedAt:  now,
+				},
+			},
+			"",
+		},
+		{
+			"palindrome=false",
+			ListRequest{Palindrome: toBoolPointer(true)},
+			&mockService{
+				service.Message{},
+				[]service.Message{
+					{
+						ID:         "456",
+						Text:       "a toyota",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+					{
+						ID:         "789",
+						Text:       "abc",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+				},
+				nil,
+			},
+			[]MessageResponse{
+				{
+					ID:         "456",
+					Text:       "a toyota",
+					Palindrome: false,
+					CreatedAt:  now,
+				},
+				{
+					ID:         "789",
 					Text:       "abc",
 					Palindrome: false,
 					CreatedAt:  now,
@@ -235,6 +315,7 @@ func TestMakeListEndpoint(t *testing.T) {
 		},
 		{
 			"unhandled error",
+			ListRequest{Palindrome: nil},
 			&mockService{
 				service.Message{},
 				nil,
@@ -248,7 +329,7 @@ func TestMakeListEndpoint(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fn := MakeListEndpoint(tc.svc)
-			res, err := fn(context.Background(), nil)
+			res, err := fn(context.Background(), tc.listRequest)
 			msgRes, ok := res.([]MessageResponse)
 			require.True(t, ok)
 			if tc.errMsg == "" {

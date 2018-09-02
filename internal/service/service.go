@@ -18,13 +18,18 @@ var (
 type Servicer interface {
 	Create(ctx context.Context, p MessagePayload) (Message, error)
 	Read(ctx context.Context, id string) (Message, error)
-	List(ctx context.Context) ([]Message, error)
+	List(ctx context.Context, p ListPayload) ([]Message, error)
 	Delete(ctx context.Context, id string) error
 }
 
 // MessagePayload represents a payload used to create a Message.
 type MessagePayload struct {
 	Text string
+}
+
+// ListPayload represents a payload used to list Messages.
+type ListPayload struct {
+	Palindrome *bool
 }
 
 // Message represents a string that may be a palindrome.
@@ -77,8 +82,11 @@ func (s *service) Read(ctx context.Context, id string) (Message, error) {
 	return toMessage(msg), nil
 }
 
-func (s *service) List(ctx context.Context) ([]Message, error) {
-	msgs, err := s.store.List(ctx)
+func (s *service) List(ctx context.Context, p ListPayload) ([]Message, error) {
+	payload := store.ListPayload{
+		Palindrome: p.Palindrome,
+	}
+	msgs, err := s.store.List(ctx, payload)
 	if err != nil {
 		return []Message{}, err
 	}

@@ -26,6 +26,11 @@ type ReadRequest struct {
 	ID string `json:"id"`
 }
 
+// ListRequest represents a payload used to list Messages.
+type ListRequest struct {
+	Palindrome *bool
+}
+
 // DeleteRequest represents a payload used to delete a Message.
 type DeleteRequest struct {
 	ID string `json:"id"`
@@ -75,7 +80,11 @@ func MakeReadEndpoint(svc service.Servicer) endpoint.Endpoint {
 // MakeListEndpoint returns a new endpoint for listing Messages.
 func MakeListEndpoint(svc service.Servicer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		msgs, err := svc.List(ctx)
+		req := request.(ListRequest)
+		p := service.ListPayload{
+			Palindrome: req.Palindrome,
+		}
+		msgs, err := svc.List(ctx, p)
 		if err != nil {
 			return []MessageResponse{}, err
 		}
