@@ -38,8 +38,18 @@ func (ts *tempStore) Read(ctx context.Context, id string) (Message, error) {
 	return msg, nil
 }
 
-func (ts *tempStore) List(ctx context.Context) ([]Message, error) {
-	return toSlice(ts.messages), nil
+func (ts *tempStore) List(ctx context.Context, p ListPayload) ([]Message, error) {
+	msgs := toSlice(ts.messages)
+	if p.Palindrome == nil {
+		return msgs, nil
+	}
+	var retMsgs []Message
+	for _, m := range msgs {
+		if m.Palindrome == *p.Palindrome {
+			retMsgs = append(retMsgs, m)
+		}
+	}
+	return retMsgs, nil
 }
 
 func (ts *tempStore) Delete(ctx context.Context, id string) error {

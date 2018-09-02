@@ -30,7 +30,7 @@ func (ms *mockService) Read(ctx context.Context, id string) (service.Message, er
 	return ms.msg, ms.err
 }
 
-func (ms *mockService) List(ctx context.Context) ([]service.Message, error) {
+func (ms *mockService) List(ctx context.Context, p service.ListPayload) ([]service.Message, error) {
 	return ms.msgs, ms.err
 }
 
@@ -40,6 +40,10 @@ func (ms *mockService) Delete(ctx context.Context, id string) error {
 
 func toStringPointer(s string) *string {
 	return &s
+}
+
+func toBoolPointer(b bool) *bool {
+	return &b
 }
 
 func TestMakeCreateHTTPHandler(t *testing.T) {
@@ -241,6 +245,58 @@ func TestMakeDeleteHTTPHandler(t *testing.T) {
 	}
 }
 
+func TestDecodeListRequest(t *testing.T) {
+	testCases := []struct {
+		name   string
+		query  string
+		want   endpoint.ListRequest
+		errMsg string
+	}{
+		{
+			"no palindrome query",
+			"",
+			endpoint.ListRequest{Palindrome: nil},
+			"",
+		},
+		{
+			"palindrome=true",
+			"true",
+			endpoint.ListRequest{Palindrome: toBoolPointer(true)},
+			"",
+		},
+		{
+			"palindrome=false",
+			"false",
+			endpoint.ListRequest{Palindrome: toBoolPointer(false)},
+			"",
+		},
+		{
+			"invalid palindrome query",
+			"invalid",
+			endpoint.ListRequest{},
+			errBadRequest.Error(),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			r, _ := http.NewRequest("GET", "/api/v1/messages", nil)
+			q := r.URL.Query()
+			q.Add("palindrome", tc.query)
+			r.URL.RawQuery = q.Encode()
+			req, err := decodeListRequest(context.Background(), r)
+			if tc.errMsg == "" {
+				require.NoError(t, err)
+				require.Equal(t, tc.want, req)
+			} else {
+				require.Error(t, err)
+				require.Equal(t, tc.errMsg, err.Error())
+				require.Nil(t, req)
+			}
+		})
+	}
+}
+
 func TestDecodeCreateRequestError(t *testing.T) {
 	reader := bytes.NewReader([]byte("hello, world!"))
 	r, _ := http.NewRequest("POST", "/api/v1/messages", reader)
@@ -362,6 +418,11 @@ func TestStatusCode(t *testing.T) {
 		{
 			"endpoint.ErrBadRequest",
 			endpoint.ErrBadRequest,
+			http.StatusBadRequest,
+		},
+		{
+			"errBadRequest",
+			errBadRequest,
 			http.StatusBadRequest,
 		},
 		{

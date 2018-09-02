@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -14,6 +15,7 @@ import (
 
 var (
 	errBadRouting = errors.New("inconsistent mapping between route and handler")
+	errBadRequest = errors.New("bad request")
 )
 
 // MakeCreateHTTPHandler mounts the create endpoint.
@@ -59,7 +61,7 @@ func MakeDeleteHTTPHandler(endpoint kitendpoint.Endpoint) http.Handler {
 func decodeCreateRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	var req endpoint.CreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return nil, endpoint.ErrBadRequest
+		return nil, errBadRequest
 	}
 	return req, nil
 }
@@ -74,7 +76,18 @@ func decodeReadRequest(ctx context.Context, r *http.Request) (interface{}, error
 }
 
 func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	return nil, nil
+	palindromeRaw := strings.ToLower(r.URL.Query().Get("palindrome"))
+	if palindromeRaw == "" {
+		return endpoint.ListRequest{Palindrome: nil}, nil
+	} else if palindromeRaw == "true" {
+		palindrome := true
+		return endpoint.ListRequest{Palindrome: &palindrome}, nil
+	} else if palindromeRaw == "false" {
+		palindrome := false
+		return endpoint.ListRequest{Palindrome: &palindrome}, nil
+	} else {
+		return nil, errBadRequest
+	}
 }
 
 func decodeDeleteRequest(ctx context.Context, r *http.Request) (interface{}, error) {
@@ -107,6 +120,8 @@ func statusCode(err error) int {
 	case endpoint.ErrNotFound:
 		return http.StatusNotFound
 	case endpoint.ErrBadRequest:
+		return http.StatusBadRequest
+	case errBadRequest:
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError

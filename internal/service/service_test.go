@@ -24,12 +24,16 @@ func (ms *mockStore) Read(ctx context.Context, id string) (store.Message, error)
 	return ms.msg, ms.err
 }
 
-func (ms *mockStore) List(ctx context.Context) ([]store.Message, error) {
+func (ms *mockStore) List(ctx context.Context, p store.ListPayload) ([]store.Message, error) {
 	return ms.msgs, ms.err
 }
 
 func (ms *mockStore) Delete(ctx context.Context, id string) error {
 	return ms.err
+}
+
+func toBoolPointer(b bool) *bool {
+	return &b
 }
 
 func TestNewService(t *testing.T) {
@@ -202,13 +206,15 @@ func TestList(t *testing.T) {
 	now := time.Now().UTC()
 
 	testCases := []struct {
-		name   string
-		store  store.Storer
-		want   []Message
-		errMsg string
+		name        string
+		listPayload ListPayload
+		store       store.Storer
+		want        []Message
+		errMsg      string
 	}{
 		{
-			"success",
+			"no palindrome query",
+			ListPayload{Palindrome: nil},
 			&mockStore{
 				store.Message{},
 				[]store.Message{
@@ -220,6 +226,12 @@ func TestList(t *testing.T) {
 					},
 					{
 						ID:         "456",
+						Text:       "a toyota",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+					{
+						ID:         "789",
 						Text:       "abc",
 						Palindrome: false,
 						CreatedAt:  now,
@@ -236,6 +248,74 @@ func TestList(t *testing.T) {
 				},
 				{
 					ID:         "456",
+					Text:       "a toyota",
+					Palindrome: false,
+					CreatedAt:  now.Format(time.RFC3339),
+				},
+				{
+					ID:         "789",
+					Text:       "abc",
+					Palindrome: false,
+					CreatedAt:  now.Format(time.RFC3339),
+				},
+			},
+			"",
+		},
+		{
+			"palindrome=true",
+			ListPayload{Palindrome: toBoolPointer(true)},
+			&mockStore{
+				store.Message{},
+				[]store.Message{
+					{
+						ID:         "123",
+						Text:       "racecar",
+						Palindrome: true,
+						CreatedAt:  now,
+					},
+				},
+				nil,
+			},
+			[]Message{
+				{
+					ID:         "123",
+					Text:       "racecar",
+					Palindrome: true,
+					CreatedAt:  now.Format(time.RFC3339),
+				},
+			},
+			"",
+		},
+		{
+			"palindrome=false",
+			ListPayload{Palindrome: toBoolPointer(false)},
+			&mockStore{
+				store.Message{},
+				[]store.Message{
+					{
+						ID:         "456",
+						Text:       "a toyota",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+					{
+						ID:         "789",
+						Text:       "abc",
+						Palindrome: false,
+						CreatedAt:  now,
+					},
+				},
+				nil,
+			},
+			[]Message{
+				{
+					ID:         "456",
+					Text:       "a toyota",
+					Palindrome: false,
+					CreatedAt:  now.Format(time.RFC3339),
+				},
+				{
+					ID:         "789",
 					Text:       "abc",
 					Palindrome: false,
 					CreatedAt:  now.Format(time.RFC3339),
@@ -245,6 +325,7 @@ func TestList(t *testing.T) {
 		},
 		{
 			"unhandled error",
+			ListPayload{Palindrome: nil},
 			&mockStore{
 				store.Message{},
 				nil,
@@ -258,7 +339,7 @@ func TestList(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			svc := NewService(tc.store, true)
-			msgs, err := svc.List(context.Background())
+			msgs, err := svc.List(context.Background(), tc.listPayload)
 			if tc.errMsg == "" {
 				require.NoError(t, err)
 				require.Equal(t, tc.want, msgs)

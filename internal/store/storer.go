@@ -15,7 +15,7 @@ var (
 type Storer interface {
 	Create(ctx context.Context, p MessagePayload) (Message, error)
 	Read(ctx context.Context, id string) (Message, error)
-	List(ctx context.Context) ([]Message, error)
+	List(ctx context.Context, p ListPayload) ([]Message, error)
 	Delete(ctx context.Context, id string) error
 }
 
@@ -23,6 +23,11 @@ type Storer interface {
 type MessagePayload struct {
 	Text       string
 	Palindrome bool
+}
+
+// ListPayload represents a payload used to list Messages.
+type ListPayload struct {
+	Palindrome *bool
 }
 
 // Message represents a string that may be a palindrome.

@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func toBoolPointer(b bool) *bool {
+	return &b
+}
+
 func TestNewTempStore(t *testing.T) {
 	require.NotNil(t, NewTempStore())
 }
@@ -82,32 +86,85 @@ func TestRead(t *testing.T) {
 
 func TestList(t *testing.T) {
 	testCases := []struct {
-		name     string
-		payloads []MessagePayload
+		name            string
+		messagePayloads []MessagePayload
+		listPayload     ListPayload
+		length          int
 	}{
 		{
 			"empty store",
 			[]MessagePayload{},
+			ListPayload{Palindrome: nil},
+			0,
 		},
 		{
-			"non-empty store",
+			"no palindrome query",
 			[]MessagePayload{
-				{},
-				{},
-				{},
+				{
+					Text:       "racecar",
+					Palindrome: true,
+				},
+				{
+					Text:       "a toyota",
+					Palindrome: false,
+				},
+				{
+					Text:       "abc",
+					Palindrome: false,
+				},
 			},
+			ListPayload{Palindrome: nil},
+			3,
+		},
+		{
+			"palindrome=true",
+			[]MessagePayload{
+				{
+					Text:       "racecar",
+					Palindrome: true,
+				},
+				{
+					Text:       "a toyota",
+					Palindrome: false,
+				},
+				{
+					Text:       "abc",
+					Palindrome: false,
+				},
+			},
+			ListPayload{Palindrome: toBoolPointer(true)},
+			1,
+		},
+		{
+			"palindrome=false",
+			[]MessagePayload{
+				{
+					Text:       "racecar",
+					Palindrome: true,
+				},
+				{
+					Text:       "a toyota",
+					Palindrome: false,
+				},
+				{
+					Text:       "abc",
+					Palindrome: false,
+				},
+			},
+			ListPayload{Palindrome: toBoolPointer(false)},
+			2,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := NewTempStore()
-			for _, p := range tc.payloads {
+			for _, p := range tc.messagePayloads {
 				ts.Create(context.Background(), p)
 			}
-			msgs, err := ts.List(context.Background())
+			msgs, err := ts.List(context.Background(), tc.listPayload)
 			require.NoError(t, err)
-			require.Equal(t, len(tc.payloads), len(msgs))
+			require.Equal(t, tc.length, len(msgs))
 		})
 	}
 }
