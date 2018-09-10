@@ -52,18 +52,20 @@ func main() {
 	listHandler := transport.MakeListHTTPHandler(listEndpoint)
 	deleteHandler := transport.MakeDeleteHTTPHandler(deleteEndpoint)
 
-	r := mux.NewRouter()
-	r = r.PathPrefix("/api/v1/").Subrouter()
-
 	// Duplicate route definitions to match trailing slash without redirecting.
-	r.Methods("POST").Path("/messages").Handler(createHandler)
-	r.Methods("POST").Path("/messages/").Handler(createHandler)
-	r.Methods("GET").Path("/messages/{id}").Handler(readHandler)
-	r.Methods("GET").Path("/messages/{id}/").Handler(readHandler)
-	r.Methods("GET").Path("/messages").Handler(listHandler)
-	r.Methods("GET").Path("/messages/").Handler(listHandler)
-	r.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
-	r.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
+	r := mux.NewRouter()
+	r.Methods("GET").Path("/healthz").HandlerFunc(healthz)
+	r.Methods("GET").Path("/healthz/").HandlerFunc(healthz)
+
+	s := r.PathPrefix("/api/v1/").Subrouter()
+	s.Methods("POST").Path("/messages").Handler(createHandler)
+	s.Methods("POST").Path("/messages/").Handler(createHandler)
+	s.Methods("GET").Path("/messages/{id}").Handler(readHandler)
+	s.Methods("GET").Path("/messages/{id}/").Handler(readHandler)
+	s.Methods("GET").Path("/messages").Handler(listHandler)
+	s.Methods("GET").Path("/messages/").Handler(listHandler)
+	s.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
+	s.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
@@ -98,4 +100,8 @@ func main() {
 	}
 
 	<-done
+}
+
+func healthz(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
