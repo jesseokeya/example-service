@@ -29,7 +29,6 @@ type config struct {
 
 func main() {
 	cfg := parseConfig(os.Args)
-
 	store := store.NewTempStore()
 	service := service.NewService(store, cfg.strictPalindrome)
 
@@ -37,7 +36,6 @@ func main() {
 	readEndpoint := endpoint.MakeReadEndpoint(service)
 	listEndpoint := endpoint.MakeListEndpoint(service)
 	deleteEndpoint := endpoint.MakeDeleteEndpoint(service)
-
 	createHandler := transport.MakeCreateHTTPHandler(createEndpoint)
 	readHandler := transport.MakeReadHTTPHandler(readEndpoint)
 	listHandler := transport.MakeListHTTPHandler(listEndpoint)
@@ -47,7 +45,6 @@ func main() {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/healthz").HandlerFunc(healthz)
 	r.Methods("GET").Path("/healthz/").HandlerFunc(healthz)
-
 	s := r.PathPrefix("/api/v1/").Subrouter()
 	s.Methods("POST").Path("/messages").Handler(createHandler)
 	s.Methods("POST").Path("/messages/").Handler(createHandler)
@@ -57,7 +54,6 @@ func main() {
 	s.Methods("GET").Path("/messages/").Handler(listHandler)
 	s.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
 	s.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
-
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	})
@@ -71,7 +67,6 @@ func main() {
 	}
 
 	done := make(chan struct{})
-
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
@@ -81,7 +76,6 @@ func main() {
 		}
 		close(done)
 	}()
-
 	log.Println("http-addr", cfg.httpAddr, "strict-palindrome", cfg.strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
@@ -89,7 +83,6 @@ func main() {
 			close(done)
 		}
 	}
-
 	<-done
 }
 
