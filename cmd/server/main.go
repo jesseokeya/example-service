@@ -43,7 +43,7 @@ func main() {
 	listHandler := transport.MakeListHTTPHandler(listEndpoint)
 	deleteHandler := transport.MakeDeleteHTTPHandler(deleteEndpoint)
 
-	// Duplicate route definitions to match trailing slash without redirecting.
+	// Duplicate the route definitions to match trailing slash without redirecting.
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/healthz").HandlerFunc(healthz)
 	r.Methods("GET").Path("/healthz/").HandlerFunc(healthz)
