@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,31 +17,21 @@ import (
 	"github.com/nicholaslam/palindrome-service/internal/transport"
 )
 
+var (
+	defaultHTTPAddr         = ":8080"
+	defaultStrictPalindrome = true
+)
+
+type config struct {
+	httpAddr         string
+	strictPalindrome bool
+}
+
 func main() {
-	defaultHTTPAddr := ":8080"
-	defaultStrictPalindrome := true
-
-	httpAddr := flag.String("http-addr", defaultHTTPAddr, "HTTP listen address")
-	strictPalindrome := flag.Bool("strict-palindrome", defaultStrictPalindrome, "Use strict definition of a palindrome")
-	flag.Parse()
-
-	envHTTPAddr := os.Getenv("HTTP_ADDR")
-	if *httpAddr == defaultHTTPAddr && envHTTPAddr != "" {
-		httpAddr = &envHTTPAddr
-	}
-
-	var err error
-	envStrictPalindrome := os.Getenv("STRICT_PALINDROME")
-	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
-		*strictPalindrome, err = strconv.ParseBool(envStrictPalindrome)
-		if err != nil {
-			log.Printf("invalid boolean value %s for STRICT_PALINDROME: %s\n", envStrictPalindrome, err.Error())
-			return
-		}
-	}
+	cfg := parseConfig(os.Args)
 
 	store := store.NewTempStore()
-	service := service.NewService(store, *strictPalindrome)
+	service := service.NewService(store, cfg.strictPalindrome)
 
 	createEndpoint := endpoint.MakeCreateEndpoint(service)
 	readEndpoint := endpoint.MakeReadEndpoint(service)
@@ -75,7 +66,7 @@ func main() {
 	})
 
 	srv := http.Server{
-		Addr:    *httpAddr,
+		Addr:    cfg.httpAddr,
 		Handler: r,
 	}
 
@@ -91,7 +82,7 @@ func main() {
 		close(done)
 	}()
 
-	log.Println("http-addr", *httpAddr, "strict-palindrome", *strictPalindrome)
+	log.Println("http-addr", cfg.httpAddr, "strict-palindrome", cfg.strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
 		if err != http.ErrServerClosed {
@@ -100,6 +91,36 @@ func main() {
 	}
 
 	<-done
+}
+
+func parseConfig(args []string) config {
+	fsName := args[0]
+	fsArgs := args[1:]
+
+	fs := flag.NewFlagSet(fsName, flag.ExitOnError)
+	httpAddr := fs.String("http-addr", defaultHTTPAddr, "HTTP listen address")
+	strictPalindrome := fs.Bool("strict-palindrome", defaultStrictPalindrome, "Use strict definition of a palindrome")
+	fs.Parse(fsArgs)
+
+	envHTTPAddr := os.Getenv("HTTP_ADDR")
+	if *httpAddr == defaultHTTPAddr && envHTTPAddr != "" {
+		*httpAddr = envHTTPAddr
+	}
+
+	var err error
+	envStrictPalindrome := os.Getenv("STRICT_PALINDROME")
+	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
+		*strictPalindrome, err = strconv.ParseBool(envStrictPalindrome)
+		if err != nil {
+			fmt.Printf("invalid boolean value \"%s\" for STRICT_PALINDROME: %s\n", envStrictPalindrome, err.Error())
+			os.Exit(2)
+		}
+	}
+
+	return config{
+		*httpAddr,
+		*strictPalindrome,
+	}
 }
 
 func healthz(w http.ResponseWriter, r *http.Request) {
