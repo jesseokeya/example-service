@@ -85,9 +85,8 @@ func decodeListRequest(ctx context.Context, r *http.Request) (interface{}, error
 	} else if palindromeRaw == "false" {
 		palindrome := false
 		return endpoint.ListRequest{Palindrome: &palindrome}, nil
-	} else {
-		return nil, errBadRequest
 	}
+	return nil, errBadRequest
 }
 
 func decodeDeleteRequest(ctx context.Context, r *http.Request) (interface{}, error) {
