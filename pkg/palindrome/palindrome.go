@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-// IsPalindromeStrict returns true if the provided string is a palindrome.
-// The empty string is a palindrome;
-// a string constituted only by a single character is a palindrome;
-// a string c s d is a palindrome, if s is a palindrome and c is a character equal to d;
+// IsPalindromeStrict returns true if s is a palindrome.
+// An empty string is a palindrome;
+// a single character is a palindrome;
+// a string x y z is a palindrome, if y is a palindrome and x is a character equal to z;
 // nothing else is a palindrome.
 func IsPalindromeStrict(s string) bool {
 	l := len(s)
@@ -20,9 +20,7 @@ func IsPalindromeStrict(s string) bool {
 	return true
 }
 
-// IsPalindrome returns true if the provided string is a palidrome.
-// Only alphanumeric characters are considered;
-// whitespace and case are ignored.
+// IsPalindrome converts s to lowercase and removes non-alphanumeric characters and whitespace from s before calling IsPalindromeStrict(s).
 func IsPalindrome(s string) bool {
 	r := regexp.MustCompile("[^a-zA-Z0-9]+")
 	s = r.ReplaceAllString(s, "")
