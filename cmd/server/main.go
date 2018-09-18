@@ -31,18 +31,22 @@ type config struct {
 }
 
 func main() {
-	cfg := parseConfig(os.Args)
+	cfg, err := parseConfig(os.Args)
+	if err != nil {
+		log.Println("error parsing config:", err)
+		return
+	}
 
 	str := store.NewTempStore()
 	if cfg.mongoURI != "" {
 		client, err := mongo.NewClient(cfg.mongoURI)
 		if err != nil {
-			log.Println("error creating mongo client", err)
+			log.Println("error creating mongo client:", err)
 			return
 		}
 		err = client.Connect(context.Background())
 		if err != nil {
-			log.Println("error connecting to mongo client", err)
+			log.Println("error connecting to mongo client:", err)
 			return
 		}
 		str = store.NewMongoStore(client.Database("palindromedb").Collection("messages"))
@@ -110,7 +114,7 @@ func main() {
 	<-done
 }
 
-func parseConfig(args []string) config {
+func parseConfig(args []string) (config, error) {
 	fsName := args[0]
 	fsArgs := args[1:]
 
@@ -130,8 +134,8 @@ func parseConfig(args []string) config {
 	if *strictPalindrome == defaultStrictPalindrome && envStrictPalindrome != "" {
 		*strictPalindrome, err = strconv.ParseBool(envStrictPalindrome)
 		if err != nil {
-			fmt.Printf("invalid boolean value \"%s\" for STRICT_PALINDROME: %s\n", envStrictPalindrome, err.Error())
-			os.Exit(2)
+			err = fmt.Errorf(`invalid boolean value "%s" for STRICT_PALINDROME: %s`, envStrictPalindrome, err.Error())
+			return config{}, err
 		}
 	}
 
@@ -144,7 +148,7 @@ func parseConfig(args []string) config {
 		*httpAddr,
 		*strictPalindrome,
 		*mongoURI,
-	}
+	}, nil
 }
 
 func healthz(w http.ResponseWriter, r *http.Request) {

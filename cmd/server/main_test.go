@@ -11,10 +11,11 @@ import (
 
 func TestParseConfig(t *testing.T) {
 	testCases := []struct {
-		name string
-		args []string
-		env  map[string]string
-		want config
+		name   string
+		args   []string
+		env    map[string]string
+		want   config
+		errMsg string
 	}{
 		{
 			"default",
@@ -27,6 +28,7 @@ func TestParseConfig(t *testing.T) {
 				defaultStrictPalindrome,
 				defaultMongoURI,
 			},
+			"",
 		},
 		{
 			"args only",
@@ -42,6 +44,7 @@ func TestParseConfig(t *testing.T) {
 				false,
 				"mongodb://localhost:27017",
 			},
+			"",
 		},
 		{
 			"envs only",
@@ -58,6 +61,7 @@ func TestParseConfig(t *testing.T) {
 				false,
 				"mongodb://localhost:27017",
 			},
+			"",
 		},
 		{
 			"args and envs",
@@ -77,6 +81,18 @@ func TestParseConfig(t *testing.T) {
 				false,
 				"mongodb://user1:pass1@localhost:27017",
 			},
+			"",
+		},
+		{
+			"invalid boolean value",
+			[]string{
+				"palindrome",
+			},
+			map[string]string{
+				"STRICT_PALINDROME": "invalid",
+			},
+			config{},
+			"invalid boolean value",
 		},
 	}
 
@@ -84,8 +100,15 @@ func TestParseConfig(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			defer setEnv(getEnv(tc.env))
 			setEnv(tc.env)
-			cfg := parseConfig(tc.args)
-			require.Equal(t, tc.want, cfg)
+			cfg, err := parseConfig(tc.args)
+			if tc.errMsg == "" {
+				require.NoError(t, err)
+				require.Equal(t, tc.want, cfg)
+			} else {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.errMsg)
+				require.Empty(t, cfg)
+			}
 		})
 	}
 }
