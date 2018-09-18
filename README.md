@@ -1,6 +1,6 @@
-# palindrome-service
+# example-service
 
-Palindrome service allows create, read, read all, and delete operations on messages. Messages are evaluated to determine if they are palindromes. Only English is supported.
+example-service allows create, read, read all, and delete operations on messages. Messages are evaluated to determine if they are palindromes. Only English is supported.
 
 ## Required Software
 
