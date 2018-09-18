@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/nicholaslam/palindrome-service/internal/endpoint"
-	"github.com/nicholaslam/palindrome-service/internal/service"
+	"github.com/nicholaslam/example-service/internal/endpoint"
+	"github.com/nicholaslam/example-service/internal/service"
 	"github.com/stretchr/testify/require"
 )
 

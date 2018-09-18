@@ -12,10 +12,10 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/nicholaslam/palindrome-service/internal/endpoint"
-	"github.com/nicholaslam/palindrome-service/internal/service"
-	"github.com/nicholaslam/palindrome-service/internal/store"
-	"github.com/nicholaslam/palindrome-service/internal/transport"
+	"github.com/nicholaslam/example-service/internal/endpoint"
+	"github.com/nicholaslam/example-service/internal/service"
+	"github.com/nicholaslam/example-service/internal/store"
+	"github.com/nicholaslam/example-service/internal/transport"
 )
 
 var (

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nicholaslam/palindrome-service/internal/service"
+	"github.com/nicholaslam/example-service/internal/service"
 	"github.com/stretchr/testify/require"
 )
 

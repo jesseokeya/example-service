@@ -10,7 +10,7 @@ import (
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/nicholaslam/palindrome-service/internal/endpoint"
+	"github.com/nicholaslam/example-service/internal/endpoint"
 )
 
 var (

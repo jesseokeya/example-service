@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/nicholaslam/palindrome-service/internal/store"
-	"github.com/nicholaslam/palindrome-service/pkg/palindrome"
+	"github.com/nicholaslam/example-service/internal/store"
+	"github.com/nicholaslam/example-service/pkg/palindrome"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/nicholaslam/palindrome-service/internal/service"
+	"github.com/nicholaslam/example-service/internal/service"
 )
 
 var (
