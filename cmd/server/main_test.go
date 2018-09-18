@@ -25,6 +25,7 @@ func TestParseConfig(t *testing.T) {
 			config{
 				defaultHTTPAddr,
 				defaultStrictPalindrome,
+				defaultMongoURI,
 			},
 		},
 		{
@@ -33,11 +34,13 @@ func TestParseConfig(t *testing.T) {
 				"palindrome",
 				"-http-addr=:8081",
 				"-strict-palindrome=false",
+				"-mongo-uri=mongodb://localhost:27017",
 			},
 			nil,
 			config{
 				":8081",
 				false,
+				"mongodb://localhost:27017",
 			},
 		},
 		{
@@ -48,10 +51,12 @@ func TestParseConfig(t *testing.T) {
 			map[string]string{
 				"HTTP_ADDR":         ":8081",
 				"STRICT_PALINDROME": "false",
+				"MONGO_URI":         "mongodb://localhost:27017",
 			},
 			config{
 				":8081",
 				false,
+				"mongodb://localhost:27017",
 			},
 		},
 		{
@@ -60,14 +65,17 @@ func TestParseConfig(t *testing.T) {
 				"palindrome",
 				"-http-addr=:8081",
 				"-strict-palindrome=false",
+				"-mongo-uri=mongodb://user1:pass1@localhost:27017",
 			},
 			map[string]string{
 				"HTTP_ADDR":         ":8082",
 				"STRICT_PALINDROME": "true",
+				"MONGO_URI":         "mongodb://user2:pass2@localhost:27017",
 			},
 			config{
 				":8081",
 				false,
+				"mongodb://user1:pass1@localhost:27017",
 			},
 		},
 	}

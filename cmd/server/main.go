@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/nicholaslam/palindrome-service/internal/endpoint"
 	"github.com/nicholaslam/palindrome-service/internal/service"
 	"github.com/nicholaslam/palindrome-service/internal/store"
@@ -20,22 +21,40 @@ import (
 var (
 	defaultHTTPAddr         = ":8080"
 	defaultStrictPalindrome = true
+	defaultMongoURI         = ""
 )
 
 type config struct {
 	httpAddr         string
 	strictPalindrome bool
+	mongoURI         string
 }
 
 func main() {
 	cfg := parseConfig(os.Args)
-	store := store.NewTempStore()
-	service := service.NewService(store, cfg.strictPalindrome)
+
+	str := store.NewTempStore()
+	if cfg.mongoURI != "" {
+		client, err := mongo.NewClient(cfg.mongoURI)
+		if err != nil {
+			log.Println("error creating mongo client", err)
+			return
+		}
+		err = client.Connect(context.Background())
+		if err != nil {
+			log.Println("error connecting to mongo client", err)
+			return
+		}
+		str = store.NewMongoStore(client.Database("palindromedb").Collection("messages"))
+	}
+
+	service := service.NewService(str, cfg.strictPalindrome)
 
 	createEndpoint := endpoint.MakeCreateEndpoint(service)
 	readEndpoint := endpoint.MakeReadEndpoint(service)
 	listEndpoint := endpoint.MakeListEndpoint(service)
 	deleteEndpoint := endpoint.MakeDeleteEndpoint(service)
+
 	createHandler := transport.MakeCreateHTTPHandler(createEndpoint)
 	readHandler := transport.MakeReadHTTPHandler(readEndpoint)
 	listHandler := transport.MakeListHTTPHandler(listEndpoint)
@@ -45,6 +64,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/healthz").HandlerFunc(healthz)
 	r.Methods("GET").Path("/healthz/").HandlerFunc(healthz)
+
 	s := r.PathPrefix("/api/v1/").Subrouter()
 	s.Methods("POST").Path("/messages").Handler(createHandler)
 	s.Methods("POST").Path("/messages/").Handler(createHandler)
@@ -54,6 +74,7 @@ func main() {
 	s.Methods("GET").Path("/messages/").Handler(listHandler)
 	s.Methods("DELETE").Path("/messages/{id}").Handler(deleteHandler)
 	s.Methods("DELETE").Path("/messages/{id}/").Handler(deleteHandler)
+
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	})
@@ -67,6 +88,7 @@ func main() {
 	}
 
 	done := make(chan struct{})
+
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
@@ -76,6 +98,7 @@ func main() {
 		}
 		close(done)
 	}()
+
 	log.Println("http-addr", cfg.httpAddr, "strict-palindrome", cfg.strictPalindrome)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
@@ -83,6 +106,7 @@ func main() {
 			close(done)
 		}
 	}
+
 	<-done
 }
 
@@ -93,6 +117,7 @@ func parseConfig(args []string) config {
 	fs := flag.NewFlagSet(fsName, flag.ExitOnError)
 	httpAddr := fs.String("http-addr", defaultHTTPAddr, "HTTP listen address")
 	strictPalindrome := fs.Bool("strict-palindrome", defaultStrictPalindrome, "Use strict definition of a palindrome")
+	mongoURI := fs.String("mongo-uri", defaultMongoURI, "MongoDB connection string. Pass empty string to use in-memory database")
 	fs.Parse(fsArgs)
 
 	envHTTPAddr := os.Getenv("HTTP_ADDR")
@@ -110,9 +135,15 @@ func parseConfig(args []string) config {
 		}
 	}
 
+	envMongoURI := os.Getenv("MONGO_URI")
+	if *mongoURI == defaultMongoURI && envMongoURI != "" {
+		*mongoURI = envMongoURI
+	}
+
 	return config{
 		*httpAddr,
 		*strictPalindrome,
+		*mongoURI,
 	}
 }
 

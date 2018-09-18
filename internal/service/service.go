@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/nicholaslam/palindrome-service/internal/store"
 	"github.com/nicholaslam/palindrome-service/pkg/palindrome"
@@ -106,7 +105,7 @@ func toMessage(msg store.Message) Message {
 		ID:         msg.ID,
 		Text:       msg.Text,
 		Palindrome: msg.Palindrome,
-		CreatedAt:  msg.CreatedAt.Format(time.RFC3339),
+		CreatedAt:  msg.CreatedAt,
 	}
 }
 

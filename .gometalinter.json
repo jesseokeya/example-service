@@ -8,6 +8,7 @@
         "gochecknoglobals",
         "gocyclo",
         "lll",
-        "gosec"
+        "gosec",
+        "megacheck"
     ]
 }

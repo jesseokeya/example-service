@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"errors"
-	"time"
 )
 
 var (
@@ -32,8 +31,8 @@ type ListPayload struct {
 
 // Message represents a string that may be a palindrome.
 type Message struct {
-	ID         string    `bson:"_id"`
-	Text       string    `bson:"text"`
-	Palindrome bool      `bson:"palindrome"`
-	CreatedAt  time.Time `bson:"createdAt"`
+	ID         string `bson:"_id"`
+	Text       string `bson:"text"`
+	Palindrome bool   `bson:"palindrome"`
+	CreatedAt  string `bson:"createdAt"`
 }

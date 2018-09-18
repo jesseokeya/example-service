@@ -41,7 +41,7 @@ func toBoolPointer(b bool) *bool {
 }
 
 func TestMakeCreateEndpoint(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string
@@ -114,7 +114,7 @@ func TestMakeCreateEndpoint(t *testing.T) {
 }
 
 func TestMakeReadEndpoint(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string
@@ -193,7 +193,7 @@ func TestMakeReadEndpoint(t *testing.T) {
 }
 
 func TestMakeListEndpoint(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name        string
@@ -345,7 +345,7 @@ func TestMakeListEndpoint(t *testing.T) {
 }
 
 func TestMakeDeleteEndpoint(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string

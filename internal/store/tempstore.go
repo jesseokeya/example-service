@@ -11,7 +11,7 @@ type tempStore struct {
 	messages map[string]Message
 }
 
-// NewTempStore returns a new store that persists Messages in memory.
+// NewTempStore returns a new store that stores Messages in memory.
 func NewTempStore() Storer {
 	return &tempStore{
 		messages: map[string]Message{},
@@ -24,7 +24,7 @@ func (ts *tempStore) Create(ctx context.Context, p MessagePayload) (Message, err
 		ID:         id,
 		Text:       p.Text,
 		Palindrome: p.Palindrome,
-		CreatedAt:  time.Now().UTC(),
+		CreatedAt:  time.Now().UTC().Format(time.RFC3339Nano),
 	}
 	ts.messages[id] = msg
 	return msg, nil

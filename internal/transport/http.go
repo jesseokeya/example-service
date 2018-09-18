@@ -118,9 +118,7 @@ func statusCode(err error) int {
 	switch err {
 	case endpoint.ErrNotFound:
 		return http.StatusNotFound
-	case endpoint.ErrBadRequest:
-		return http.StatusBadRequest
-	case errBadRequest:
+	case endpoint.ErrBadRequest, errBadRequest:
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError

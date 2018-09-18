@@ -47,7 +47,7 @@ func toBoolPointer(b bool) *bool {
 }
 
 func TestMakeCreateHTTPHandler(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name    string
@@ -96,7 +96,7 @@ func TestMakeCreateHTTPHandler(t *testing.T) {
 }
 
 func TestMakeReadHTTPHandler(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name    string
@@ -146,7 +146,7 @@ func TestMakeReadHTTPHandler(t *testing.T) {
 }
 
 func TestMakeListHTTPHandler(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string
@@ -206,7 +206,7 @@ func TestMakeListHTTPHandler(t *testing.T) {
 }
 
 func TestMakeDeleteHTTPHandler(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name    string
@@ -323,7 +323,7 @@ func TestDecodeDeleteRequestError(t *testing.T) {
 }
 
 func TestEncodeResponse(t *testing.T) {
-	now := time.Now().UTC().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name string

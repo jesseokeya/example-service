@@ -204,7 +204,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestToSlice(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name string

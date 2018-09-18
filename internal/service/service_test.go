@@ -41,7 +41,7 @@ func TestNewService(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name    string
@@ -71,7 +71,7 @@ func TestCreate(t *testing.T) {
 				ID:         "123",
 				Text:       "a toyota",
 				Palindrome: false,
-				CreatedAt:  now.Format(time.RFC3339),
+				CreatedAt:  now,
 			},
 			"",
 		},
@@ -95,7 +95,7 @@ func TestCreate(t *testing.T) {
 				ID:         "123",
 				Text:       "a toyota",
 				Palindrome: true,
-				CreatedAt:  now.Format(time.RFC3339),
+				CreatedAt:  now,
 			},
 			"",
 		},
@@ -132,7 +132,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string
@@ -158,7 +158,7 @@ func TestRead(t *testing.T) {
 				ID:         "123",
 				Text:       "racecar",
 				Palindrome: true,
-				CreatedAt:  now.Format(time.RFC3339),
+				CreatedAt:  now,
 			},
 			"",
 		},
@@ -203,7 +203,7 @@ func TestRead(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name        string
@@ -244,19 +244,19 @@ func TestList(t *testing.T) {
 					ID:         "123",
 					Text:       "racecar",
 					Palindrome: true,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 				{
 					ID:         "456",
 					Text:       "a toyota",
 					Palindrome: false,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 				{
 					ID:         "789",
 					Text:       "abc",
 					Palindrome: false,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 			},
 			"",
@@ -281,7 +281,7 @@ func TestList(t *testing.T) {
 					ID:         "123",
 					Text:       "racecar",
 					Palindrome: true,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 			},
 			"",
@@ -312,13 +312,13 @@ func TestList(t *testing.T) {
 					ID:         "456",
 					Text:       "a toyota",
 					Palindrome: false,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 				{
 					ID:         "789",
 					Text:       "abc",
 					Palindrome: false,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 			},
 			"",
@@ -353,7 +353,7 @@ func TestList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name   string
@@ -417,7 +417,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestToMessage(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name string
@@ -436,7 +436,7 @@ func TestToMessage(t *testing.T) {
 				ID:         "123",
 				Text:       "racecar",
 				Palindrome: true,
-				CreatedAt:  now.Format(time.RFC3339),
+				CreatedAt:  now,
 			},
 		},
 	}
@@ -450,7 +450,7 @@ func TestToMessage(t *testing.T) {
 }
 
 func TestToSlice(t *testing.T) {
-	now := time.Now().UTC()
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 
 	testCases := []struct {
 		name string
@@ -478,13 +478,13 @@ func TestToSlice(t *testing.T) {
 					ID:         "123",
 					Text:       "racecar",
 					Palindrome: true,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 				{
 					ID:         "456",
 					Text:       "abc",
 					Palindrome: false,
-					CreatedAt:  now.Format(time.RFC3339),
+					CreatedAt:  now,
 				},
 			},
 		},
