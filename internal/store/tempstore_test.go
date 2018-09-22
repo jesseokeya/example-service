@@ -16,7 +16,7 @@ func TestNewTempStore(t *testing.T) {
 	require.NotNil(t, NewTempStore())
 }
 
-func TestCreate(t *testing.T) {
+func TestTempStoreCreate(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload MessagePayload
@@ -48,7 +48,7 @@ func TestCreate(t *testing.T) {
 	}
 }
 
-func TestRead(t *testing.T) {
+func TestTempStoreRead(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload MessagePayload
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) {
 	}
 }
 
-func TestList(t *testing.T) {
+func TestTempStoreList(t *testing.T) {
 	testCases := []struct {
 		name            string
 		messagePayloads []MessagePayload
@@ -169,7 +169,7 @@ func TestList(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestTempStoreDelete(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload MessagePayload
