@@ -18,6 +18,11 @@ import (
 	"github.com/nicholaslam/example-service/internal/transport"
 )
 
+const (
+	dbName         = "palindromedb"
+	collectionName = "messages"
+)
+
 var (
 	defaultHTTPAddr         = ":8080"
 	defaultStrictPalindrome = true
@@ -49,7 +54,7 @@ func main() {
 			log.Println("error connecting to mongo client:", err)
 			return
 		}
-		str = store.NewMongoStore(client.Database("palindromedb").Collection("messages"))
+		str = store.NewMongoStore(client.Database(dbName).Collection(collectionName))
 	}
 
 	service := service.NewService(str, cfg.strictPalindrome)
