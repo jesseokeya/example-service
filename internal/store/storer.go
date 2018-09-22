@@ -1,3 +1,4 @@
+// Package store implements utilities to persist messsages.
 package store
 
 import (

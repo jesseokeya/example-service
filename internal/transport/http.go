@@ -1,3 +1,4 @@
+// Package transport implements utilities to expose the service over HTTP.
 package transport
 
 import (

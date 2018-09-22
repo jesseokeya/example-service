@@ -1,3 +1,4 @@
+// Package endpoint implements utilities to marshal and unmarshal JSON.
 package endpoint
 
 import (

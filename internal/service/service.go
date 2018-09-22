@@ -1,3 +1,4 @@
+// Package service implements utilities to operate on messages.
 package service
 
 import (

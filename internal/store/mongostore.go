@@ -13,7 +13,7 @@ type mongoStore struct {
 	collection *mongo.Collection
 }
 
-// NewMongoStore returns a new store that stores Messages in MongoDB.
+// NewMongoStore returns a new store that persists Messages in MongoDB.
 func NewMongoStore(c *mongo.Collection) Storer {
 	return &mongoStore{
 		collection: c,
