@@ -24,7 +24,7 @@ type mongoStore struct {
 }
 
 // NewMongoStore returns a new store that persists Messages in MongoDB.
-func NewMongoStore(c MongoCollection) Storer {
+func NewMongoStore(c MongoCollection) Store {
 	return &mongoStore{
 		collection: c,
 	}

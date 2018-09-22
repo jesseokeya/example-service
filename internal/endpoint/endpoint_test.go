@@ -45,7 +45,7 @@ func TestMakeCreateEndpoint(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		svc    service.Servicer
+		svc    service.Service
 		req    CreateRequest
 		want   MessageResponse
 		errMsg string
@@ -118,7 +118,7 @@ func TestMakeReadEndpoint(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		svc    service.Servicer
+		svc    service.Service
 		req    ReadRequest
 		want   MessageResponse
 		errMsg string
@@ -198,7 +198,7 @@ func TestMakeListEndpoint(t *testing.T) {
 	testCases := []struct {
 		name        string
 		listRequest ListRequest
-		svc         service.Servicer
+		svc         service.Service
 		want        []MessageResponse
 		errMsg      string
 	}{
@@ -349,7 +349,7 @@ func TestMakeDeleteEndpoint(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		svc    service.Servicer
+		svc    service.Service
 		req    DeleteRequest
 		errMsg string
 	}{

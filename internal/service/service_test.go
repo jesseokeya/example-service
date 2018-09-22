@@ -45,7 +45,7 @@ func TestCreate(t *testing.T) {
 
 	testCases := []struct {
 		name    string
-		store   store.Storer
+		store   store.Store
 		strict  bool
 		payload MessagePayload
 		want    Message
@@ -136,7 +136,7 @@ func TestRead(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		store  store.Storer
+		store  store.Store
 		id     string
 		want   Message
 		errMsg string
@@ -208,7 +208,7 @@ func TestList(t *testing.T) {
 	testCases := []struct {
 		name        string
 		listPayload ListPayload
-		store       store.Storer
+		store       store.Store
 		want        []Message
 		errMsg      string
 	}{
@@ -357,7 +357,7 @@ func TestDelete(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		store  store.Storer
+		store  store.Store
 		id     string
 		errMsg string
 	}{

@@ -14,8 +14,8 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
-// Servicer describes a service that stores Messages.
-type Servicer interface {
+// Service describes a service that stores Messages.
+type Service interface {
 	Create(ctx context.Context, p MessagePayload) (Message, error)
 	Read(ctx context.Context, id string) (Message, error)
 	List(ctx context.Context, p ListPayload) ([]Message, error)
@@ -40,20 +40,20 @@ type Message struct {
 	CreatedAt  string
 }
 
-type service struct {
-	store            store.Storer
+type basicService struct {
+	store            store.Store
 	strictPalindrome bool
 }
 
 // NewService returns a new service.
-func NewService(s store.Storer, strict bool) Servicer {
-	return &service{
+func NewService(s store.Store, strict bool) Service {
+	return &basicService{
 		store:            s,
 		strictPalindrome: strict,
 	}
 }
 
-func (s *service) Create(ctx context.Context, p MessagePayload) (Message, error) {
+func (s *basicService) Create(ctx context.Context, p MessagePayload) (Message, error) {
 	var pal bool
 	if s.strictPalindrome {
 		pal = palindrome.IsPalindromeStrict(p.Text)
@@ -71,7 +71,7 @@ func (s *service) Create(ctx context.Context, p MessagePayload) (Message, error)
 	return toMessage(msg), nil
 }
 
-func (s *service) Read(ctx context.Context, id string) (Message, error) {
+func (s *basicService) Read(ctx context.Context, id string) (Message, error) {
 	msg, err := s.store.Read(ctx, id)
 	if err != nil {
 		if err == store.ErrNotFound {
@@ -82,7 +82,7 @@ func (s *service) Read(ctx context.Context, id string) (Message, error) {
 	return toMessage(msg), nil
 }
 
-func (s *service) List(ctx context.Context, p ListPayload) ([]Message, error) {
+func (s *basicService) List(ctx context.Context, p ListPayload) ([]Message, error) {
 	payload := store.ListPayload{
 		Palindrome: p.Palindrome,
 	}
@@ -93,7 +93,7 @@ func (s *service) List(ctx context.Context, p ListPayload) ([]Message, error) {
 	return toSlice(msgs), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *basicService) Delete(ctx context.Context, id string) error {
 	err := s.store.Delete(ctx, id)
 	if err == store.ErrNotFound {
 		return nil

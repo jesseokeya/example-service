@@ -11,8 +11,8 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
-// Storer describes a store that allows create, read, list, and delete operations on Messages.
-type Storer interface {
+// Store describes a store that allows create, read, list, and delete operations on Messages.
+type Store interface {
 	Create(ctx context.Context, p MessagePayload) (Message, error)
 	Read(ctx context.Context, id string) (Message, error)
 	List(ctx context.Context, p ListPayload) ([]Message, error)

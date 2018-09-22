@@ -12,7 +12,7 @@ type tempStore struct {
 }
 
 // NewTempStore returns a new store that persists Messages in memory.
-func NewTempStore() Storer {
+func NewTempStore() Store {
 	return &tempStore{
 		messages: map[string]Message{},
 	}

@@ -52,7 +52,7 @@ func TestMakeCreateHTTPHandler(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload endpoint.CreateRequest
-		svc     service.Servicer
+		svc     service.Service
 		status  int
 		want    endpoint.MessageResponse
 	}{
@@ -101,7 +101,7 @@ func TestMakeReadHTTPHandler(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload endpoint.CreateRequest
-		svc     service.Servicer
+		svc     service.Service
 		status  int
 		want    endpoint.MessageResponse
 	}{
@@ -150,7 +150,7 @@ func TestMakeListHTTPHandler(t *testing.T) {
 
 	testCases := []struct {
 		name   string
-		svc    service.Servicer
+		svc    service.Service
 		status int
 		want   []endpoint.MessageResponse
 	}{
@@ -211,7 +211,7 @@ func TestMakeDeleteHTTPHandler(t *testing.T) {
 	testCases := []struct {
 		name    string
 		payload endpoint.CreateRequest
-		svc     service.Servicer
+		svc     service.Service
 		status  int
 	}{
 		{

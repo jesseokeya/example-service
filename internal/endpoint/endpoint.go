@@ -46,7 +46,7 @@ type MessageResponse struct {
 }
 
 // MakeCreateEndpoint returns a new endpoint for creating Messages.
-func MakeCreateEndpoint(svc service.Servicer) endpoint.Endpoint {
+func MakeCreateEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateRequest)
 		if req.Text == nil {
@@ -64,7 +64,7 @@ func MakeCreateEndpoint(svc service.Servicer) endpoint.Endpoint {
 }
 
 // MakeReadEndpoint returns a new endpoint for reading Messages.
-func MakeReadEndpoint(svc service.Servicer) endpoint.Endpoint {
+func MakeReadEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(ReadRequest)
 		msg, err := svc.Read(ctx, req.ID)
@@ -79,7 +79,7 @@ func MakeReadEndpoint(svc service.Servicer) endpoint.Endpoint {
 }
 
 // MakeListEndpoint returns a new endpoint for listing Messages.
-func MakeListEndpoint(svc service.Servicer) endpoint.Endpoint {
+func MakeListEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(ListRequest)
 		p := service.ListPayload{
@@ -98,7 +98,7 @@ func MakeListEndpoint(svc service.Servicer) endpoint.Endpoint {
 }
 
 // MakeDeleteEndpoint returns a new endpoint for deleting Messages.
-func MakeDeleteEndpoint(svc service.Servicer) endpoint.Endpoint {
+func MakeDeleteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(DeleteRequest)
 		err := svc.Delete(ctx, req.ID)
