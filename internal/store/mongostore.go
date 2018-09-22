@@ -7,24 +7,14 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/findopt"
-	"github.com/mongodb/mongo-go-driver/mongo/insertopt"
 )
 
-// MongoCollection describes a MongoDB collection.
-type MongoCollection interface {
-	InsertOne(ctx context.Context, document interface{}, opts ...insertopt.One) (*mongo.InsertOneResult, error)
-	FindOne(ctx context.Context, filter interface{}, opts ...findopt.One) *mongo.DocumentResult
-	Find(ctx context.Context, filter interface{}, opts ...findopt.Find) (mongo.Cursor, error)
-	FindOneAndDelete(ctx context.Context, filter interface{}, opts ...findopt.DeleteOne) *mongo.DocumentResult
-}
-
 type mongoStore struct {
-	collection MongoCollection
+	collection *mongo.Collection
 }
 
 // NewMongoStore returns a new store that persists Messages in MongoDB.
-func NewMongoStore(c MongoCollection) Store {
+func NewMongoStore(c *mongo.Collection) Store {
 	return &mongoStore{
 		collection: c,
 	}
